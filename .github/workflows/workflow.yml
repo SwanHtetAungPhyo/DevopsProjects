@@ -2,18 +2,19 @@ name: Go Multi-App CI/CD
 
 on:
   push:
-    branches: [main, dev]
+    branches: [ main, dev ]
     paths:
       - 'app-one/**'
       - 'app-two/**'
       - 'app-three/**'
       - '.github/workflows/**'
   pull_request:
-    branches: [main, dev]
+    branches: [ main, dev ]
     paths:
       - 'app-one/**'
       - 'app-two/**'
       - 'app-three/**'
+  workflow_dispatch:
 
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -82,3 +83,7 @@ jobs:
       go_version: '1.25.1'
       working_directory: ./app-three
     secrets: inherit
+
+defaults:
+run-name:
+concurrency:
