@@ -27,5 +27,5 @@ COPY --from=builder /build/server .
 RUN adduser -D -s /bin/bash appuser
 USER appuser
 
-EXPOSE 8080
+EXPOSE 8082
 ENTRYPOINT ["./server"]

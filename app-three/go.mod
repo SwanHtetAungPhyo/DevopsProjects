@@ -1,4 +1,4 @@
-module github.com/SwanHtetAungPhyo/app-one
+module github.com/SwanHtetAungPhyo/app-two
 
 go 1.25.1
 

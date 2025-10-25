@@ -1,0 +1,16 @@
+{
+    email admin@example.com
+    auto_https disable_redirects
+}
+
+app-one.example.com:8181 {
+    reverse_proxy app-one:8080
+}
+
+app-two.example.com:8181 {
+    reverse_proxy app-two:8082
+}
+
+app-three.example.com:8181 {
+    reverse_proxy app-three:8083
+}

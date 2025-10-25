@@ -1,0 +1,86 @@
+
+services:
+  caddy:
+    image: caddy:2.7-alpine
+    ports:
+      - "8181:80"
+      - "9443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+    networks:
+      - application_network
+    healthcheck:
+      test: ["CMD", "caddy", "health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  app-one:
+    build:
+      context: app-one
+      dockerfile: Dockerfile
+    environment:
+      - APP_ENV=production
+      - LOG_LEVEL=info
+    expose:
+      - "8080"
+    restart: unless-stopped
+    networks:
+      - application_network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  app-two:
+    build:
+      context: app-two
+      dockerfile: Dockerfile
+    environment:
+      - APP_ENV=production
+      - LOG_LEVEL=info
+    expose:
+      - "8082"
+    restart: unless-stopped
+    networks:
+      - application_network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8082/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  app-three:
+    build:
+      context: app-three
+      dockerfile: Dockerfile
+    environment:
+      - APP_ENV=production
+      - LOG_LEVEL=info
+    expose:
+      - "8083"
+    restart: unless-stopped
+    networks:
+      - application_network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8083/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  caddy_data:
+    driver: local
+  caddy_config:
+    driver: local
+
+networks:
+  application_network:
+    driver: bridge
