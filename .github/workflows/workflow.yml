@@ -83,7 +83,3 @@ jobs:
       go_version: '1.25.1'
       working_directory: ./app-three
     secrets: inherit
-
-defaults:
-run-name:
-concurrency:
