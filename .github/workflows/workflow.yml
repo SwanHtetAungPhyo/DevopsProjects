@@ -1,4 +1,84 @@
-name: workflow.yml
+name: Go Multi-App CI/CD
+
 on:
+  push:
+    branches: [main, dev]
+    paths:
+      - 'app-one/**'
+      - 'app-two/**'
+      - 'app-three/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [main, dev]
+    paths:
+      - 'app-one/**'
+      - 'app-two/**'
+      - 'app-three/**'
+
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  GO_VERSION: '1.25.1'
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
+  detect-changes:
+    name: 'Detect Changed Apps'
+    runs-on: ubuntu-latest
+    outputs:
+      app-one: ${{ steps.filter.outputs.app-one }}
+      app-two: ${{ steps.filter.outputs.app-two }}
+      app-three: ${{ steps.filter.outputs.app-three }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check Changed Files
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            app-one:
+              - 'app-one/**'
+            app-two:
+              - 'app-two/**'
+            app-three:
+              - 'app-three/**'
+
+  app-one:
+    name: 'Build App One'
+    needs: detect-changes
+    if: needs.detect-changes.outputs.app-one == 'true'
+    uses: ./.github/workflows/go-app.yml
+    with:
+      app_name: app-one
+      app_display_name: "Application Number One"
+      go_version: ${{env.GO_VERSION}}
+      working_directory: ./app-one
+    secrets: inherit
+
+  app-two:
+    name: 'Build App Two'
+    needs: detect-changes
+    if: needs.detect-changes.outputs.app-two == 'true'
+    uses: ./.github/workflows/go-app.yml
+    with:
+      app_name: app-two
+      app_display_name: "Application Number Two"
+      go_version: ${{env.GO_VERSION}}
+      working_directory: ./app-two
+    secrets: inherit
+
+  app-three:
+    name: 'Build App Three'
+    needs: detect-changes
+    if: needs.detect-changes.outputs.app-three == 'true'
+    uses: ./.github/workflows/go-app.yml
+    with:
+      app_name: app-three
+      app_display_name: "Application Number Three"
+      go_version: ${{env.GO_VERSION}}
+      working_directory: ./app-three
+    secrets: inherit
