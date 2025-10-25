@@ -23,6 +23,7 @@ func main() {
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)
 	}
+	log.Printf("Stopped app-one server on port %s", port)
 }
 
 func handleRoot(w http.ResponseWriter, r *http.Request) {
