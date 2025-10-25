@@ -55,7 +55,7 @@ jobs:
     with:
       app_name: app-one
       app_display_name: "Application Number One"
-      go_version: ${{env.GO_VERSION}}
+      go_version: '1.25.1'
       working_directory: ./app-one
     secrets: inherit
 
@@ -67,7 +67,7 @@ jobs:
     with:
       app_name: app-two
       app_display_name: "Application Number Two"
-      go_version: ${{env.GO_VERSION}}
+      go_version: '1.25.1'
       working_directory: ./app-two
     secrets: inherit
 
@@ -79,6 +79,6 @@ jobs:
     with:
       app_name: app-three
       app_display_name: "Application Number Three"
-      go_version: ${{env.GO_VERSION}}
+      go_version: '1.25.1'
       working_directory: ./app-three
     secrets: inherit
