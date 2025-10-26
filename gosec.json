@@ -1,0 +1,25 @@
+{
+  "global": {
+    "nosec": false,
+    "audit": true
+  },
+  "severity": "medium",
+  "confidence": "medium",
+  "exclude-generated": true,
+  "exclude-dirs": [
+    "vendor",
+    "test",
+    "tests",
+    "mock",
+    "mocks"
+  ],
+  "exclude": [
+    "G101"
+  ],
+  "exclude-rules": {
+    "G101": {
+      "comment": "False positives on SQL queries - tokens/passwords are parameters, not hardcoded"
+    }
+  },
+  "tests": false
+}

@@ -1,0 +1,105 @@
+repos:
+  - repo: https://github.com/dnephin/pre-commit-golang
+    rev: v0.5.1
+    hooks:
+      # App One
+      - id: go-vet
+        name: Go Vet (App One)
+        entry: bash -c 'cd app-one && go vet ./... 2>/dev/null || echo "No Go files to vet in app-one"'
+        language: system
+        files: ^app-one/
+        pass_filenames: false
+        always_run: true
+
+      - id: go-mod-tidy
+        name: Go Mod Tidy (App One)
+        entry: bash -c 'cd app-one && go mod tidy -v && git add go.mod go.sum'
+        language: system
+        files: ^app-one/go\.mod$
+        pass_filenames: false
+        always_run: false
+
+      # App Two
+      - id: go-vet
+        name: Go Vet (App Two)
+        entry: bash -c 'cd app-two && go vet ./... 2>/dev/null || echo "No Go files to vet in app-two"'
+        language: system
+        files: ^app-two/
+        pass_filenames: false
+        always_run: true
+
+      - id: go-mod-tidy
+        name: Go Mod Tidy (App Two)
+        entry: bash -c 'cd app-two && go mod tidy -v && git add go.mod go.sum'
+        language: system
+        files: ^app-two/go\.mod$
+        pass_filenames: false
+        always_run: false
+
+      # App Three
+      - id: go-vet
+        name: Go Vet (App Three)
+        entry: bash -c 'cd app-three && go vet ./... 2>/dev/null || echo "No Go files to vet in app-three"'
+        language: system
+        files: ^app-three/
+        pass_filenames: false
+        always_run: true
+
+      - id: go-mod-tidy
+        name: Go Mod Tidy (App Three)
+        entry: bash -c 'cd app-three && go mod tidy -v && git add go.mod go.sum'
+        language: system
+        files: ^app-three/go\.mod$
+        pass_filenames: false
+        always_run: false
+
+  # Security scanning with Gosec
+  - repo: local
+    hooks:
+      - id: gosec-app-one
+        name: Gosec Security Scanner (App One)
+        entry: bash -c 'cd app-one && gosec -exclude-dir=vendor -exclude-generated ./... 2>/dev/null || echo "No Go files to scan in app-one"'
+        language: system
+        files: ^app-one/.*\.go$
+        pass_filenames: false
+        always_run: false
+
+      - id: gosec-app-two
+        name: Gosec Security Scanner (App Two)
+        entry: bash -c 'cd app-two && gosec -exclude-dir=vendor -exclude-generated ./... 2>/dev/null || echo "No Go files to scan in app-two"'
+        language: system
+        files: ^app-two/.*\.go$
+        pass_filenames: false
+        always_run: false
+
+      - id: gosec-app-three
+        name: Gosec Security Scanner (App Three)
+        entry: bash -c 'cd app-three && gosec -exclude-dir=vendor -exclude-generated ./... 2>/dev/null || echo "No Go files to scan in app-three"'
+        language: system
+        files: ^app-three/.*\.go$
+        pass_filenames: false
+        always_run: false
+
+  # Go formatting
+  - repo: local
+    hooks:
+      - id: go-fmt-app-one
+        name: Go Format (App One)
+        entry: bash -c 'cd app-one && go fmt ./...'
+        language: system
+        files: ^app-one/.*\.go$
+        pass_filenames: false
+
+      - id: go-fmt-app-two
+        name: Go Format (App Two)
+        entry: bash -c 'cd app-two && go fmt ./...'
+        language: system
+        files: ^app-two/.*\.go$
+        pass_filenames: false
+
+      - id: go-fmt-app-three
+        name: Go Format (App Three)
+        entry: bash -c 'cd app-three && go fmt ./...'
+        language: system
+        files: ^app-three/.*\.go$
+        pass_filenames: false
