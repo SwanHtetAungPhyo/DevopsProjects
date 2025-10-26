@@ -1,0 +1,7 @@
+name: event-driven
+description: A minimal AWS Go Pulumi program
+runtime: go
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: https://github.com/pulumi/templates/tree/master/aws-go
