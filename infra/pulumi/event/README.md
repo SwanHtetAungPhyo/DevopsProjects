@@ -1,4 +1,7 @@
-# Event-Driven AWS Infrastructure
+# AWS Infrastructure as Code with Pulumi for the Event-Driven Application
+
+----
+### Author: Swan Htet Aung Phyo 
 
 A Pulumi Go program that provisions a complete AWS infrastructure setup including VPC networking and EC2 instances. This project demonstrates Infrastructure as Code best practices using modular components for scalable cloud deployments.
 
@@ -28,7 +31,7 @@ graph TB
             end
             
             subgraph "Security Group"
-                SG[Security Group Rules<br/>• SSH (22)<br/>• HTTP (80)<br/>• HTTPS (443)<br/>• All Outbound]
+                SG[Security Group Rules<br/>SSH Port 22<br/>HTTP Port 80<br/>HTTPS Port 443<br/>All Outbound]
             end
             
             EC2[EC2 Instance<br/>t2.micro<br/>Amazon Linux 2<br/>Public IP]
