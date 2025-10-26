@@ -134,3 +134,5 @@ ENV/
 !**/.env.example
 !**/.env.sample
 !**/.env.template
+
+**/.vscode
