@@ -20,7 +20,7 @@ services:
 
   app-one:
     build:
-      context: app-one
+      context: ../event-driven/app-one
       dockerfile: Dockerfile
     environment:
       - APP_ENV=production
@@ -36,10 +36,15 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: 0.5
+          memory: "250"
   app-two:
     build:
-      context: app-two
+      context: ../event-driven/app-two
       dockerfile: Dockerfile
     environment:
       - APP_ENV=production
@@ -55,10 +60,15 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: 0.5
+          memory: "250"
   app-three:
     build:
-      context: app-three
+      context: ../event-driven/app-three
       dockerfile: Dockerfile
     environment:
       - APP_ENV=production
@@ -74,6 +84,12 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: 0.5
+          memory: "250"
 
 volumes:
   caddy_data:

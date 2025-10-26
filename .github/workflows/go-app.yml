@@ -217,5 +217,5 @@ jobs:
         with:
           image-ref: ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.app_name }}:latest
           format: 'table'
-          exit-code: 0  # Don't fail build for now
+          exit-code: 0
         continue-on-error: true

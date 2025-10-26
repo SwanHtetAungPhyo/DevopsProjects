@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  ssh-test-server:
+    build: .
+    container_name: scl-ssh-test
+    ports:
+      - "2222:22"  # Map container port 22 to host port 2222
+    hostname: test-server
+    networks:
+      - scl-network
+
+networks:
+  scl-network:
+    driver: bridge

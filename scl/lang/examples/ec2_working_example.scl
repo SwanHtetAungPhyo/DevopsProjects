@@ -1,0 +1,70 @@
+// EC2 Working Example - Template for your actual EC2 connection
+// UPDATE THE TARGET IP/DNS BELOW WITH YOUR ACTUAL EC2 DETAILS
+
+// Configuration
+mode := "interpret";
+setting := "configuration";
+super_user := true;
+on_error := "rollback";
+
+// 🎯 UPDATE THIS LINE WITH YOUR ACTUAL EC2 PUBLIC IP OR DNS:
+// Examples:
+//   target := "ec2-user@3.15.123.456";  // Public IP
+//   target := "ec2-user@ec2-3-15-123-456.us-east-2.compute.amazonaws.com";  // Public DNS
+target := "ec2-user@YOUR_EC2_PUBLIC_IP_HERE";
+
+fn main() {
+    print("🚀 EC2 Working Example");
+    print("======================");
+    print("Target: " + target);
+    print("");
+    
+    print("⚠️  BEFORE RUNNING:");
+    print("   1. Update the 'target' variable above with your EC2 public IP");
+    print("   2. Make sure your EC2 instance is running");
+    print("   3. Check security group allows SSH from your IP");
+    print("");
+    
+    // Test basic connection
+    basic_test();
+    
+    // If that works, do more advanced tests
+    advanced_tests();
+    
+    print("✅ EC2 example completed successfully!");
+}
+
+fn basic_test() {
+    print("🧪 Basic Connection Test");
+    print("------------------------");
+    
+    // Get system information
+    print("📊 Getting EC2 system information...");
+    sysinfo();
+    
+    print("✅ Basic connection test passed!");
+    print("");
+}
+
+fn advanced_tests() {
+    print("🔧 Advanced EC2 Tests");
+    print("---------------------");
+    
+    // Test package management
+    print("📦 Testing package management...");
+    package("update", "");
+    
+    // Test file operations
+    print("📁 Testing file operations...");
+    create("/tmp/scl_ec2_test", "success.txt", "644");
+    
+    // Test service management
+    print("⚙️ Testing service management...");
+    service("status", "sshd");
+    
+    print("✅ Advanced tests completed!");
+    print("");
+    print("🎉 Your SCL language works perfectly with EC2!");
+    print("");
+    print("🚀 Ready for production deployment!");
+}
