@@ -1,2 +1,136 @@
-.idea
-./**/.env
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment files - ALL patterns
+.env
+.env.*
+*.env
+**/.env
+**/.env.*
+**/*.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.staging
+!.env.example
+!.env.sample
+!.env.template
+
+# AWS Credentials
+.aws/
+credentials
+config
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Pulumi
+Pulumi.*.yaml
+!Pulumi.yaml
+.pulumi/
+**/.pulumi/
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+go.work
+go.work.sum
+
+# Build artifacts
+bin/
+dist/
+build/
+target/
+*.log
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!terraform.tfvars.example
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ansible
+*.retry
+.vault_pass
+vault_password
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Secrets and certificates
+*.crt
+*.cert
+*.key
+*.pem
+*.p12
+*.pfx
+secrets/
+secrets.yaml
+secrets.yml
+credentials.json
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*~
+
+# Node (if you add any JS tools)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Python (if you add any Python tools)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+
+# Ignore all .env files recursively
+# This is the most reliable pattern
+**/.env*
+!**/.env.example
+!**/.env.sample
+!**/.env.template
