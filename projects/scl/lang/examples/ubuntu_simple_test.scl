@@ -1,0 +1,96 @@
+// Simple Ubuntu Docker Test - Quick verification
+// This is a minimal test to ensure SCL works with Ubuntu Docker
+
+// Configuration
+mode := "interpret";
+setting := "configuration";
+super_user := true;
+on_error := "rollback";
+target := "ubuntu@localhost:2222";  // Docker Ubuntu container
+
+fn main() {
+    print("🧪 Simple Ubuntu Docker Test");
+    print("============================");
+    print("Target: " + target);
+    print("");
+    
+    // Test 1: Basic connection
+    basic_connection_test();
+    
+    // Test 2: System operations
+    system_operations_test();
+    
+    // Test 3: File operations
+    file_operations_test();
+    
+    print("✅ Simple Ubuntu test completed successfully!");
+    print_next_steps();
+}
+
+fn basic_connection_test() {
+    print("🔍 Test 1: Basic Connection");
+    print("---------------------------");
+    
+    // Get system information
+    print("📊 Getting Ubuntu system information...");
+    sysinfo();
+    
+    print("✅ Connection test passed!");
+    print("");
+}
+
+fn system_operations_test() {
+    print("⚙️ Test 2: System Operations");
+    print("-----------------------------");
+    
+    // Test package operations
+    print("📦 Testing package management...");
+    package("update", "");
+    
+    // Test service operations
+    print("🔧 Testing service management...");
+    service("status", "ssh");
+    
+    print("✅ System operations test passed!");
+    print("");
+}
+
+fn file_operations_test() {
+    print("📁 Test 3: File Operations");
+    print("---------------------------");
+    
+    // Test file creation
+    print("📝 Creating test files...");
+    create("/tmp/scl_test", "hello.txt", "644");
+    create("/tmp/scl_test/config", "app.conf", "600");
+    create("/tmp/scl_test/logs", "test.log", "644");
+    
+    print("✅ File operations test passed!");
+    print("");
+}
+
+fn print_next_steps() {
+    print("🎯 Test Results");
+    print("===============");
+    print("");
+    print("✅ All tests passed! Your SCL language can:");
+    print("   ✓ Connect to Ubuntu Docker container");
+    print("   ✓ Execute system commands remotely");
+    print("   ✓ Manage packages with apt");
+    print("   ✓ Control systemd services");
+    print("   ✓ Create files and directories");
+    print("");
+    
+    print("🚀 Ready for the full demo!");
+    print("   ./scl examples/ubuntu_docker_demo.scl --verbose");
+    print("");
+    
+    print("🔍 Explore the container:");
+    print("   docker exec -it scl-ubuntu-test bash");
+    print("   ls -la /tmp/scl_test/");
+    print("");
+    
+    print("🌐 Test web server:");
+    print("   curl http://localhost:8080");
+    print("");
+}

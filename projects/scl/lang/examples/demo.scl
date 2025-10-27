@@ -1,0 +1,41 @@
+import primary;
+
+setting := configuration;
+//target := ["testuser@localhost:2222"];
+super_user = true;
+on_error = rollback;
+mode := interpret;
+
+declare system_ready: bool = check(target, ["mkdir", "touch"]);
+declare user_name: string = "Swan"
+declare password: string = "SWAN"
+
+fn main(){
+
+    create(".",["main.sh", "main.scl"])
+    find(".", "solution", primary.FIND_R)
+    echo("Hello")
+    systemInfo()
+
+    declare docker_path =  install(primary.APT,primary.DOCKER)
+
+    primary.print(docker_path)
+
+    set_path("/opt/app")
+
+    try(timeout(run("docker compose up -d")))
+
+    ssh(target,user_name, password)
+
+    declare machine :=  systemInfo()->machine
+
+    if machine == "ubuntu"{
+        grep(".",primary.FIND_R,"HELLE")
+
+    }else{
+        replace(".", "")
+    }
+
+    network()
+}
+

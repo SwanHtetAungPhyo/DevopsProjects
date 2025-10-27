@@ -4,16 +4,16 @@ on:
   push:
     branches: [ main, dev ]
     paths:
-      - 'app-one/**'
-      - 'app-two/**'
-      - 'app-three/**'
+      - 'projects/event-driven/app-one/**'
+      - 'projects/event-driven/app-two/**'
+      - 'projects/event-driven/app-three/**'
       - '.github/workflows/**'
   pull_request:
     branches: [ main, dev ]
     paths:
-      - 'app-one/**'
-      - 'app-two/**'
-      - 'app-three/**'
+      - 'projects/event-driven/app-one/**'
+      - 'projects/event-driven/app-two/**'
+      - 'projects/event-driven/app-three/**'
   workflow_dispatch:
 
 env:
@@ -42,11 +42,11 @@ jobs:
         with:
           filters: |
             app-one:
-              - 'app-one/**'
+              - 'projects/event-driven/app-one/**'
             app-two:
-              - 'app-two/**'
+              - 'projects/event-driven/app-two/**'
             app-three:
-              - 'app-three/**'
+              - 'projects/event-driven/app-three/**'
 
   app-one:
     name: 'Build App One'
@@ -57,7 +57,7 @@ jobs:
       app_name: app-one
       app_display_name: "Application Number One"
       go_version: '1.25.1'
-      working_directory: ./app-one
+      working_directory: ./projects/event-driven/app-one
     secrets: inherit
 
   app-two:
@@ -69,7 +69,7 @@ jobs:
       app_name: app-two
       app_display_name: "Application Number Two"
       go_version: '1.25.1'
-      working_directory: ./app-two
+      working_directory: ./project/event-driven/app-two
     secrets: inherit
 
   app-three:
@@ -81,5 +81,5 @@ jobs:
       app_name: app-three
       app_display_name: "Application Number Three"
       go_version: '1.25.1'
-      working_directory: ./app-three
+      working_directory: ./projects/event-driven/app-three
     secrets: inherit

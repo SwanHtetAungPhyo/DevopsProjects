@@ -1,0 +1,648 @@
+// SCL Complete Examples Collection
+// This file demonstrates all language features with practical examples
+
+// =============================================================================
+// BASIC SYNTAX EXAMPLES
+// =============================================================================
+
+// Comments
+// Single line comment
+/* Multi-line comment
+   spanning multiple lines */
+
+// Import statements
+import primary;
+
+// Configuration variables (required)
+mode := "interpret";                    // or "compile"
+setting := "configuration";
+super_user := true;                     // or false
+on_error := "rollback";                 // or "destroy"
+target := "user@server.com";            // SSH target (optional for local)
+
+// =============================================================================
+// VARIABLE DECLARATIONS AND ASSIGNMENTS
+// =============================================================================
+
+// Basic assignments
+hostname := "web-server";
+port := 8080;
+ssl_enabled := true;
+debug_mode := false;
+
+// Explicit type declarations
+declare environment: string = "production";
+declare max_connections: int = 1000;
+declare cpu_threshold: float = 85.5;
+declare backup_enabled: bool = true;
+declare server_list: list = ["web1", "web2", "web3"];
+declare port_list: list = [80, 443, 8080];
+
+// Mixed arrays
+declare mixed_config: list = ["production", 443, true];
+
+// =============================================================================
+// FUNCTION EXAMPLES
+// =============================================================================
+
+// Main function (entry point)
+fn main() {
+    print("🚀 SCL Complete Examples Demo");
+    
+    // Call all example functions
+    basic_operations();
+    conditional_examples();
+    system_operations();
+    devops_operations();
+    
+    print("✅ All examples completed successfully!");
+}
+
+// Basic operations function
+fn basic_operations() {
+    print("=== Basic Operations ===");
+    
+    // Simple print statements
+    print("Hello, SCL World!");
+    print("Current environment: " + environment);
+    
+    // System information
+    sysinfo();
+}
+
+// =============================================================================
+// CONDITIONAL STATEMENTS (IF-ELSE)
+// =============================================================================
+
+fn conditional_examples() {
+    print("=== Conditional Examples ===");
+    
+    // Simple if statement
+    if (ssl_enabled) {
+        print("SSL is enabled");
+    }
+    
+    // If-else statement
+    if (environment == "production") {
+        print("Running in production mode");
+        production_config();
+    } else {
+        print("Running in development mode");
+        development_config();
+    }
+    
+    // Complex conditions with logical operators
+    if (ssl_enabled && environment == "production") {
+        print("Production SSL configuration");
+        cert("letsencrypt", "example.com");
+    }
+    
+    if (debug_mode || environment == "development") {
+        print("Debug logging enabled");
+        logs("/var/log/app.log", "DEBUG", 50);
+    }
+    
+    // Nested if statements
+    if (backup_enabled) {
+        if (environment == "production") {
+            print("Setting up production backup");
+            backup("backup", "/var/www", "/backup/www-prod.tar.gz");
+        } else {
+            print("Setting up development backup");
+            backup("backup", "/var/www", "/backup/www-dev.tar.gz");
+        }
+    }
+    
+    // Comparison operators
+    if (port > 1024) {
+        print("Using non-privileged port: " + port);
+    }
+    
+    if (max_connections >= 1000) {
+        print("High-capacity server configuration");
+        tune("file_limits", "65536");
+    }
+    
+    if (cpu_threshold <= 90.0) {
+        print("CPU threshold is within safe limits");
+    }
+    
+    // Inequality checks
+    if (environment != "development") {
+        print("Not in development environment");
+        firewall("enable");
+    }
+}
+
+fn production_config() {
+    print("Applying production configuration");
+    
+    // Production-specific settings
+    package("install", "fail2ban");
+    service("enable", "fail2ban");
+    firewall("enable");
+    
+    // SSL setup
+    if (ssl_enabled) {
+        cert("letsencrypt", "production.example.com");
+        firewall("allow", "443/tcp");
+    }
+}
+
+fn development_config() {
+    print("Applying development configuration");
+    
+    // Development tools
+    package("install", "git");
+    package("install", "curl");
+    package("install", "vim");
+    
+    // Development ports
+    firewall("allow", "3000/tcp");
+    firewall("allow", "8080/tcp");
+}
+
+// =============================================================================
+// SYSTEM OPERATIONS
+// =============================================================================
+
+fn system_operations() {
+    print("=== System Operations ===");
+    
+    // System information and monitoring
+    print("📊 System Information:");
+    sysinfo();
+    
+    print("📈 System Monitoring:");
+    monitor();
+    
+    print("🔒 Security Audit:");
+    audit();
+}
+
+// =============================================================================
+// DEVOPS OPERATIONS
+// =============================================================================
+
+fn devops_operations() {
+    print("=== DevOps Operations ===");
+    
+    // Package management examples
+    package_management_examples();
+    
+    // Service management examples
+    service_management_examples();
+    
+    // File operations examples
+    file_operations_examples();
+    
+    // Network operations examples
+    network_operations_examples();
+    
+    // Security operations examples
+    security_operations_examples();
+    
+    // Container operations examples
+    container_operations_examples();
+    
+    // Advanced operations examples
+    advanced_operations_examples();
+}
+
+fn package_management_examples() {
+    print("📦 Package Management:");
+    
+    // Update package lists
+    package("update", "");
+    
+    // Install packages
+    package("install", "nginx");
+    package("install", "htop");
+    package("install", "curl");
+    
+    // Search for packages
+    package("search", "docker");
+}
+
+fn service_management_examples() {
+    print("⚙️ Service Management:");
+    
+    // Start services
+    service("start", "nginx");
+    
+    // Enable services (start on boot)
+    service("enable", "nginx");
+    
+    // Check service status
+    service("status", "nginx");
+    
+    // Restart services
+    service("restart", "nginx");
+    
+    // Stop services
+    service("stop", "apache2");
+    
+    // Disable services
+    service("disable", "apache2");
+}
+
+fn file_operations_examples() {
+    print("📁 File Operations:");
+    
+    // Create files and directories
+    create("/var/log/myapp", "app.log", "644");
+    create("/etc/myapp", "config.json", "600");
+    create("/tmp/test", "readme.txt", "755");
+    
+    // Copy files from local to remote
+    copy("nginx.conf", "/etc/nginx/nginx.conf");
+    copy("app.jar", "/opt/myapp/app.jar");
+}
+
+fn network_operations_examples() {
+    print("🌐 Network Operations:");
+    
+    // Ping tests
+    nettest("google.com", "ping");
+    nettest("8.8.8.8", "ping");
+    
+    // Port connectivity tests
+    nettest("example.com:80", "telnet");
+    nettest("example.com:443", "telnet");
+    
+    // HTTP tests
+    nettest("https://httpbin.org/get", "curl");
+    
+    // DNS lookups
+    nettest("example.com", "nslookup");
+}
+
+fn security_operations_examples() {
+    print("🔒 Security Operations:");
+    
+    // Firewall management
+    firewall("status");
+    firewall("enable");
+    firewall("allow", "22/tcp");     // SSH
+    firewall("allow", "80/tcp");     // HTTP
+    firewall("allow", "443/tcp");    // HTTPS
+    firewall("deny", "23/tcp");      // Telnet
+    
+    // User management
+    user("add", "devops", "sudo");
+    user("passwd", "devops", "secure_password123");
+    user("sudo", "devops");
+    
+    // Certificate management
+    cert("generate_self_signed", "test.example.com");
+    cert("check_expiry", "example.com");
+    
+    // If in production, use Let's Encrypt
+    if (environment == "production") {
+        cert("letsencrypt", "production.example.com");
+    }
+}
+
+fn container_operations_examples() {
+    print("🐳 Container Operations:");
+    
+    // List containers
+    docker("ps");
+    
+    // List images
+    docker("images");
+    
+    // Start container
+    docker("start", "web-container");
+    
+    // Stop container
+    docker("stop", "web-container");
+    
+    // View container logs
+    docker("logs", "web-container");
+    
+    // Pull image
+    docker("pull", "nginx:latest");
+    
+    // Run new container
+    docker("run", "-d", "--name", "my-nginx", "-p", "80:80", "nginx:latest");
+}
+
+fn advanced_operations_examples() {
+    print("🔧 Advanced Operations:");
+    
+    // Cron job management
+    cron("add", "0 2 * * *", "/usr/local/bin/backup.sh", "root");
+    cron("add", "0 */6 * * *", "/usr/bin/certbot renew", "root");
+    cron("list", "", "", "root");
+    
+    // Backup operations
+    backup("backup", "/etc", "/backup/etc-backup.tar.gz");
+    backup("backup", "/var/www", "/backup/www-backup.tar.gz");
+    
+    // Log analysis
+    logs("/var/log/syslog", "error", 10);
+    logs("/var/log/nginx/access.log", "404", 5);
+    logs("/var/log/auth.log", "Failed", 10);
+    
+    // System tuning
+    tune("swappiness", "10");
+    tune("file_limits", "65536");
+    tune("tcp_tuning");
+    
+    // Web server operations
+    webserver("nginx", "test");
+    webserver("nginx", "reload");
+    
+    // Database operations (if applicable)
+    database("mysql", "status");
+}
+
+// =============================================================================
+// ARITHMETIC AND LOGICAL EXPRESSIONS
+// =============================================================================
+
+fn expression_examples() {
+    print("=== Expression Examples ===");
+    
+    // Arithmetic expressions
+    declare base_port: int = 8000;
+    declare offset: int = 80;
+    declare final_port: int = base_port + offset;
+    
+    declare cpu_cores: int = 4;
+    declare memory_per_core: float = 2.5;
+    declare total_memory: float = cpu_cores * memory_per_core;
+    
+    // Comparison expressions
+    if (final_port > 8000) {
+        print("Port is above base range");
+    }
+    
+    if (total_memory >= 8.0) {
+        print("Sufficient memory available");
+    }
+    
+    // Complex logical expressions
+    if ((environment == "production") && (ssl_enabled || port == 443)) {
+        print("Production HTTPS setup required");
+    }
+    
+    if ((cpu_threshold > 80.0) || (total_memory < 4.0)) {
+        print("Resource constraints detected");
+    }
+}
+
+// =============================================================================
+// ARRAY OPERATIONS
+// =============================================================================
+
+fn array_examples() {
+    print("=== Array Examples ===");
+    
+    // String arrays
+    declare web_servers: list = ["web1.example.com", "web2.example.com", "web3.example.com"];
+    declare config_files: list = ["nginx.conf", "ssl.conf", "mime.types"];
+    
+    // Numeric arrays
+    declare http_ports: list = [80, 8080, 8000];
+    declare https_ports: list = [443, 8443];
+    
+    // Mixed arrays
+    declare server_config: list = ["web-server", 80, true, "nginx"];
+    
+    // Boolean arrays
+    declare feature_flags: list = [true, false, true, false];
+    
+    print("Array examples defined successfully");
+}
+
+// =============================================================================
+// ERROR HANDLING PATTERNS
+// =============================================================================
+
+fn error_handling_examples() {
+    print("=== Error Handling Examples ===");
+    
+    // Check prerequisites before proceeding
+    declare tools_ready: bool = check(target, ["docker", "nginx"]);
+    
+    if (tools_ready) {
+        print("✅ All required tools are available");
+        deploy_with_tools();
+    } else {
+        print("❌ Required tools missing, installing...");
+        install_prerequisites();
+        deploy_with_tools();
+    }
+    
+    // Environment-specific error handling
+    if (environment == "production") {
+        // More careful approach in production
+        print("Production deployment - running pre-checks");
+        audit();
+        
+        if (backup_enabled) {
+            backup("backup", "/var/www", "/backup/pre-deploy.tar.gz");
+        }
+    }
+}
+
+fn install_prerequisites() {
+    print("Installing missing prerequisites...");
+    package("update", "");
+    package("install", "docker.io");
+    package("install", "nginx");
+}
+
+fn deploy_with_tools() {
+    print("Deploying with available tools...");
+    service("start", "docker");
+    service("start", "nginx");
+}
+
+// =============================================================================
+// REAL-WORLD DEPLOYMENT SCENARIOS
+// =============================================================================
+
+fn web_application_deployment() {
+    print("=== Web Application Deployment ===");
+    
+    // Phase 1: System preparation
+    print("Phase 1: System Preparation");
+    sysinfo();
+    package("update", "");
+    
+    // Phase 2: Install dependencies
+    print("Phase 2: Installing Dependencies");
+    package("install", "nginx");
+    package("install", "docker.io");
+    
+    // Phase 3: Security setup
+    print("Phase 3: Security Setup");
+    firewall("enable");
+    firewall("allow", "22/tcp");
+    firewall("allow", "80/tcp");
+    
+    if (ssl_enabled) {
+        firewall("allow", "443/tcp");
+        cert("letsencrypt", "myapp.example.com");
+    }
+    
+    // Phase 4: Application deployment
+    print("Phase 4: Application Deployment");
+    copy("app-config.json", "/etc/myapp/config.json");
+    docker("pull", "myapp:latest");
+    docker("run", "-d", "--name", "myapp", "-p", "3000:3000", "myapp:latest");
+    
+    // Phase 5: Reverse proxy setup
+    print("Phase 5: Reverse Proxy Setup");
+    copy("nginx-app.conf", "/etc/nginx/sites-available/myapp");
+    webserver("nginx", "test");
+    webserver("nginx", "reload");
+    
+    // Phase 6: Monitoring setup
+    print("Phase 6: Monitoring Setup");
+    monitor();
+    cron("add", "*/5 * * * *", "/usr/local/bin/health-check.sh", "root");
+    
+    print("✅ Web application deployment completed");
+}
+
+fn database_server_setup() {
+    print("=== Database Server Setup ===");
+    
+    // Install database
+    package("install", "mysql-server");
+    
+    // Secure installation
+    service("start", "mysql");
+    service("enable", "mysql");
+    
+    // Configure firewall (restrict database access)
+    firewall("allow", "3306/tcp");
+    
+    // Setup backup
+    if (backup_enabled) {
+        cron("add", "0 2 * * *", "/usr/local/bin/mysql-backup.sh", "root");
+    }
+    
+    // Monitor database
+    database("mysql", "status");
+    
+    print("✅ Database server setup completed");
+}
+
+fn microservices_deployment() {
+    print("=== Microservices Deployment ===");
+    
+    // Install container runtime
+    package("install", "docker.io");
+    service("start", "docker");
+    service("enable", "docker");
+    
+    // Deploy multiple services
+    docker("pull", "user-service:latest");
+    docker("pull", "order-service:latest");
+    docker("pull", "payment-service:latest");
+    
+    // Start services with different ports
+    docker("run", "-d", "--name", "user-service", "-p", "3001:3000", "user-service:latest");
+    docker("run", "-d", "--name", "order-service", "-p", "3002:3000", "order-service:latest");
+    docker("run", "-d", "--name", "payment-service", "-p", "3003:3000", "payment-service:latest");
+    
+    // Setup load balancer
+    copy("nginx-microservices.conf", "/etc/nginx/nginx.conf");
+    webserver("nginx", "test");
+    webserver("nginx", "reload");
+    
+    // Configure firewall for microservices
+    firewall("allow", "80/tcp");
+    firewall("allow", "443/tcp");
+    
+    print("✅ Microservices deployment completed");
+}
+
+// =============================================================================
+// MONITORING AND MAINTENANCE
+// =============================================================================
+
+fn monitoring_setup() {
+    print("=== Monitoring Setup ===");
+    
+    // System monitoring
+    monitor();
+    
+    // Log monitoring
+    logs("/var/log/syslog", "error", 20);
+    logs("/var/log/nginx/error.log", "", 10);
+    
+    // Security monitoring
+    audit();
+    
+    // Performance monitoring
+    tune("kernel_params");
+    
+    // Setup automated monitoring
+    cron("add", "*/10 * * * *", "/usr/local/bin/system-check.sh", "root");
+    cron("add", "0 1 * * *", "/usr/local/bin/security-scan.sh", "root");
+    
+    print("✅ Monitoring setup completed");
+}
+
+fn maintenance_tasks() {
+    print("=== Maintenance Tasks ===");
+    
+    // System updates
+    package("update", "");
+    
+    // Log rotation and cleanup
+    logs("/var/log/syslog", "", 100);
+    
+    // Security updates
+    audit();
+    
+    // Backup verification
+    if (backup_enabled) {
+        backup("backup", "/etc", "/backup/maintenance-backup.tar.gz");
+    }
+    
+    // Certificate renewal
+    cert("check_expiry", "example.com");
+    
+    // Performance optimization
+    tune("swappiness", "10");
+    
+    print("✅ Maintenance tasks completed");
+}
+
+// =============================================================================
+// TESTING AND VALIDATION
+// =============================================================================
+
+fn deployment_validation() {
+    print("=== Deployment Validation ===");
+    
+    // Service validation
+    service("status", "nginx");
+    service("status", "docker");
+    
+    // Network validation
+    nettest("localhost:80", "telnet");
+    
+    if (ssl_enabled) {
+        nettest("localhost:443", "telnet");
+    }
+    
+    // Container validation
+    docker("ps");
+    
+    // Security validation
+    firewall("status");
+    audit();
+    
+    // Performance validation
+    monitor();
+    
+    print("✅ Deployment validation completed");
+}

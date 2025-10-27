@@ -1,0 +1,19 @@
+// Minimal SSH Test
+// Test just SSH connection and one operation
+
+// Configuration
+mode := "interpret";
+setting := "configuration";
+super_user := true;
+on_error := "rollback";
+target := "testuser@localhost:2222";
+
+fn main() {
+    print("🐳 Minimal SSH Test");
+    
+    // Just test file creation without sysinfo
+    print("📁 Creating file...");
+    create("/tmp", "minimal_test.txt", "644");
+    
+    print("✅ Minimal test completed!");
+}
