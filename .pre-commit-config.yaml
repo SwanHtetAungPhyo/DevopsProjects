@@ -2,9 +2,9 @@ repos:
   - repo: https://github.com/dnephin/pre-commit-golang
     rev: v0.5.1
     hooks:
-      # Pulumi event
+      # Pulumi Event
       - id: go-vet
-        name: Vetting pulumi event folder
+        name: Go Vet (Pulumi Event)
         entry: bash -c 'cd infra/pulumi/event && go vet ./... 2>/dev/null || echo "No go files in pulumi event"'
         language: system
         files: ^infra/pulumi/event/
@@ -22,68 +22,85 @@ repos:
       # SCL Lang
       - id: go-vet
         name: Go Vet (SCL Lang)
-        entry: bash -c 'cd scl/lang && go vet ./... 2>/dev/null || echo "No Go files to vet in scl/lang"'
+        entry: bash -c 'cd projects/scl/lang && go vet ./... 2>/dev/null || echo "No Go files to vet in scl/lang"'
         language: system
-        files: ^scl/lang/
+        files: ^projects/scl/lang/
         pass_filenames: false
         always_run: true
 
       - id: go-mod-tidy
         name: Go Mod Tidy (SCL Lang)
-        entry: bash -c 'cd scl/lang && go mod tidy -v && git add go.mod go.sum'
+        entry: bash -c 'cd projects/scl/lang && go mod tidy -v && git add go.mod go.sum'
         language: system
-        files: ^scl/lang/go\.mod$
+        files: ^projects/scl/lang/go\.mod$
         pass_filenames: false
         always_run: false
 
       # App One
       - id: go-vet
         name: Go Vet (App One)
-        entry: bash -c 'cd event-driven/app-one && go vet ./... 2>/dev/null || echo "No Go files to vet in app-one"'
+        entry: bash -c 'cd projects/event-driven/app-one && go vet ./... 2>/dev/null || echo "No Go files to vet in app-one"'
         language: system
-        files: ^event-driven/app-one/
+        files: ^projects/event-driven/app-one/
         pass_filenames: false
         always_run: true
 
       - id: go-mod-tidy
         name: Go Mod Tidy (App One)
-        entry: bash -c 'cd event-driven/app-one && go mod tidy -v && git add go.mod go.sum'
+        entry: bash -c 'cd projects/event-driven/app-one && go mod tidy -v && git add go.mod go.sum'
         language: system
-        files: ^event-driven/app-one/go\.mod$
+        files: ^projects/event-driven/app-one/go\.mod$
         pass_filenames: false
         always_run: false
 
       # App Two
       - id: go-vet
         name: Go Vet (App Two)
-        entry: bash -c 'cd event-driven/app-two && go vet ./... 2>/dev/null || echo "No Go files to vet in app-two"'
+        entry: bash -c 'cd projects/event-driven/app-two && go vet ./... 2>/dev/null || echo "No Go files to vet in app-two"'
         language: system
-        files: ^event-driven/app-two/
+        files: ^projects/event-driven/app-two/
         pass_filenames: false
         always_run: true
 
       - id: go-mod-tidy
         name: Go Mod Tidy (App Two)
-        entry: bash -c 'cd event-driven/app-two && go mod tidy -v && git add go.mod go.sum'
+        entry: bash -c 'cd projects/event-driven/app-two && go mod tidy -v && git add go.mod go.sum'
         language: system
-        files: ^event-driven/app-two/go\.mod$
+        files: ^projects/event-driven/app-two/go\.mod$
         pass_filenames: false
         always_run: false
 
       # App Three
       - id: go-vet
         name: Go Vet (App Three)
-        entry: bash -c 'cd event-driven/app-three && go vet ./... 2>/dev/null || echo "No Go files to vet in app-three"'
+        entry: bash -c 'cd projects/event-driven/app-three && go vet ./... 2>/dev/null || echo "No Go files to vet in app-three"'
         language: system
-        files: ^event-driven/app-three/
+        files: ^projects/event-driven/app-three/
         pass_filenames: false
         always_run: true
 
       - id: go-mod-tidy
         name: Go Mod Tidy (App Three)
-        entry: bash -c 'cd event-driven/app-three && go mod tidy -v && git add go.mod go.sum'
+        entry: bash -c 'cd projects/event-driven/app-three && go mod tidy -v && git add go.mod go.sum'
         language: system
-        files: ^event-driven/app-three/go\.mod$
+        files: ^projects/event-driven/app-three/go\.mod$
+        pass_filenames: false
+        always_run: false
+
+      # Docker Log Agent
+      - id: go-vet
+        name: Go Vet (Docker Log Agent)
+        entry: bash -c 'cd projects/docker-log-agent && go vet ./... 2>/dev/null || echo "No Go files to vet in docker-log-agent"'
+        language: system
+        files: ^projects/docker-log-agent/
+        pass_filenames: false
+        always_run: true
+
+      - id: go-mod-tidy
+        name: Go Mod Tidy (Docker Log Agent)
+        entry: bash -c 'cd projects/docker-log-agent && go mod tidy -v && git add go.mod go.sum'
+        language: system
+        files: ^projects/docker-log-agent/go\.mod$
         pass_filenames: false
         always_run: false
 
@@ -100,33 +117,41 @@ repos:
 
       - id: gosec-scl-lang
         name: Gosec Security Scanner (SCL Lang)
-        entry: bash -c 'cd scl/lang && gosec -exclude-dir=vendor -exclude-generated ./... 2>/dev/null || echo "No Go files to scan"'
+        entry: bash -c 'cd projects/scl/lang && gosec -exclude-dir=vendor -exclude-generated ./... 2>/dev/null || echo "No Go files to scan"'
         language: system
-        files: ^scl/lang/.*\.go$
+        files: ^projects/scl/lang/.*\.go$
         pass_filenames: false
         always_run: false
 
       - id: gosec-app-one
         name: Gosec Security Scanner (App One)
-        entry: bash -c 'cd event-driven/app-one && gosec -exclude-dir=vendor -exclude-generated ./... 2>/dev/null || echo "No Go files to scan"'
+        entry: bash -c 'cd projects/event-driven/app-one && gosec -exclude-dir=vendor -exclude-generated ./... 2>/dev/null || echo "No Go files to scan"'
         language: system
-        files: ^event-driven/app-one/.*\.go$
+        files: ^projects/event-driven/app-one/.*\.go$
         pass_filenames: false
         always_run: false
 
       - id: gosec-app-two
         name: Gosec Security Scanner (App Two)
-        entry: bash -c 'cd event-driven/app-two && gosec -exclude-dir=vendor -exclude-generated ./... 2>/dev/null || echo "No Go files to scan"'
+        entry: bash -c 'cd projects/event-driven/app-two && gosec -exclude-dir=vendor -exclude-generated ./... 2>/dev/null || echo "No Go files to scan"'
         language: system
-        files: ^event-driven/app-two/.*\.go$
+        files: ^projects/event-driven/app-two/.*\.go$
         pass_filenames: false
         always_run: false
 
       - id: gosec-app-three
         name: Gosec Security Scanner (App Three)
-        entry: bash -c 'cd event-driven/app-three && gosec -exclude-dir=vendor -exclude-generated ./... 2>/dev/null || echo "No Go files to scan"'
+        entry: bash -c 'cd projects/event-driven/app-three && gosec -exclude-dir=vendor -exclude-generated ./... 2>/dev/null || echo "No Go files to scan"'
         language: system
-        files: ^event-driven/app-three/.*\.go$
+        files: ^projects/event-driven/app-three/.*\.go$
+        pass_filenames: false
+        always_run: false
+
+      - id: gosec-docker-log-agent
+        name: Gosec Security Scanner (Docker Log Agent)
+        entry: bash -c 'cd projects/docker-log-agent && gosec -exclude-dir=vendor -exclude-generated ./... 2>/dev/null || echo "No Go files to scan"'
+        language: system
+        files: ^projects/docker-log-agent/.*\.go$
         pass_filenames: false
         always_run: false
 
@@ -142,28 +167,35 @@ repos:
 
       - id: go-fmt-scl-lang
         name: Go Format (SCL Lang)
-        entry: bash -c 'cd scl/lang && go fmt ./...'
+        entry: bash -c 'cd projects/scl/lang && go fmt ./...'
         language: system
-        files: ^scl/lang/.*\.go$
+        files: ^projects/scl/lang/.*\.go$
         pass_filenames: false
 
       - id: go-fmt-app-one
         name: Go Format (App One)
-        entry: bash -c 'cd event-driven/app-one && go fmt ./...'
+        entry: bash -c 'cd projects/event-driven/app-one && go fmt ./...'
         language: system
-        files: ^event-driven/app-one/.*\.go$
+        files: ^projects/event-driven/app-one/.*\.go$
         pass_filenames: false
 
       - id: go-fmt-app-two
         name: Go Format (App Two)
-        entry: bash -c 'cd event-driven/app-two && go fmt ./...'
+        entry: bash -c 'cd projects/event-driven/app-two && go fmt ./...'
         language: system
-        files: ^event-driven/app-two/.*\.go$
+        files: ^projects/event-driven/app-two/.*\.go$
         pass_filenames: false
 
       - id: go-fmt-app-three
         name: Go Format (App Three)
-        entry: bash -c 'cd event-driven/app-three && go fmt ./...'
+        entry: bash -c 'cd projects/event-driven/app-three && go fmt ./...'
         language: system
-        files: ^event-driven/app-three/.*\.go$
+        files: ^projects/event-driven/app-three/.*\.go$
+        pass_filenames: false
+
+      - id: go-fmt-docker-log-agent
+        name: Go Format (Docker Log Agent)
+        entry: bash -c 'cd projects/docker-log-agent && go fmt ./...'
+        language: system
+        files: ^projects/docker-log-agent/.*\.go$
         pass_filenames: false
