@@ -93,6 +93,7 @@ jobs:
           file: ${{ inputs.working_directory }}/coverage.out
           flags: ${{ inputs.app_name }}
           name: ${{ inputs.app_name }}-coverage
+        continue-on-error: true
 
       - name: Upload Coverage Artifact
         uses: actions/upload-artifact@v4
@@ -100,13 +101,25 @@ jobs:
           name: ${{ inputs.app_name }}-coverage
           path: ${{ inputs.working_directory }}/coverage.html
 
+      - name: Determine Main File Path
+        id: main-path
+        run: |
+          if [ -f "cmd/main.go" ]; then
+            echo "main_file=./cmd/main.go" >> $GITHUB_OUTPUT
+          elif [ -f "main.go" ]; then
+            echo "main_file=./main.go" >> $GITHUB_OUTPUT
+          else
+            echo "Error: No main.go found"
+            exit 1
+          fi
+
       - name: Build Binary
         run: |
           mkdir -p bin
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
             -ldflags="-w -s -X main.Version=${{ github.sha }}" \
             -o bin/${{ inputs.app_name }} \
-            ./cmd/main.go
+            ${{ steps.main-path.outputs.main_file }}
 
       - name: Upload Binary Artifact
         uses: actions/upload-artifact@v4
@@ -133,10 +146,9 @@ jobs:
           go-version: ${{ inputs.go_version }}
 
       - name: Run Gosec Security Scanner
-        uses: securego/gosec@master
-        with:
-          args: '-exclude-generated -fmt text -out gosec-results.txt ./...'
-        continue-on-error: true  # Don't fail the build on gosec errors
+        run: |
+          go install github.com/securego/gosec/v2/cmd/gosec@latest
+          gosec -exclude-generated -fmt text -out gosec-results.txt ./... || true
 
       - name: Display Gosec Results
         run: |
@@ -153,7 +165,7 @@ jobs:
           scan-type: 'fs'
           scan-ref: '${{ inputs.working_directory }}'
           format: 'table'
-          exit-code: 0  # Don't fail build on vulnerabilities for now
+          exit-code: 0
         continue-on-error: true
 
       - name: Upload Security Reports
@@ -167,7 +179,7 @@ jobs:
   docker-build-push:
     name: 'Docker Build & Push ${{ inputs.app_display_name }}'
     runs-on: ubuntu-latest
-    needs: [test-and-build]
+    needs: [test-and-build, security-scan]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     defaults:

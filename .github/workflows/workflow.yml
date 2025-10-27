@@ -17,6 +17,27 @@ on:
       - 'projects/event-driven/app-three/**'
       - 'projects/docker-log-agent/**'
   workflow_dispatch:
+    inputs:
+      app-one:
+        description: 'Build App One'
+        type: boolean
+        default: false
+      app-two:
+        description: 'Build App Two'
+        type: boolean
+        default: false
+      app-three:
+        description: 'Build App Three'
+        type: boolean
+        default: false
+      docker-log-agent:
+        description: 'Build Docker Log Agent'
+        type: boolean
+        default: false
+      build-all:
+        description: 'Build All Apps'
+        type: boolean
+        default: false
 
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -31,10 +52,10 @@ jobs:
     name: 'Detect Changed Apps'
     runs-on: ubuntu-latest
     outputs:
-      app-one: ${{ steps.filter.outputs.app-one }}
-      app-two: ${{ steps.filter.outputs.app-two }}
-      app-three: ${{ steps.filter.outputs.app-three }}
-      docker-log-agent: ${{ steps.filter.outputs.docker-log-agent}}
+      app-one: ${{ steps.set-outputs.outputs.app-one }}
+      app-two: ${{ steps.set-outputs.outputs.app-two }}
+      app-three: ${{ steps.set-outputs.outputs.app-three }}
+      docker-log-agent: ${{ steps.set-outputs.outputs.docker-log-agent }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -42,6 +63,7 @@ jobs:
       - name: Check Changed Files
         uses: dorny/paths-filter@v3
         id: filter
+        if: github.event_name != 'workflow_dispatch'
         with:
           filters: |
             app-one:
@@ -50,6 +72,24 @@ jobs:
               - 'projects/event-driven/app-two/**'
             app-three:
               - 'projects/event-driven/app-three/**'
+            docker-log-agent: 
+              - 'projects/docker-log-agent/**'
+
+      - name: Set Outputs
+        id: set-outputs
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "app-one=${{ inputs.build-all == true || inputs.app-one == true }}" >> $GITHUB_OUTPUT
+            echo "app-two=${{ inputs.build-all == true || inputs.app-two == true }}" >> $GITHUB_OUTPUT
+            echo "app-three=${{ inputs.build-all == true || inputs.app-three == true }}" >> $GITHUB_OUTPUT
+            echo "docker-log-agent=${{ inputs.build-all == true || inputs.docker-log-agent == true }}" >> $GITHUB_OUTPUT
+          else
+            # For push/PR triggers
+            echo "app-one=${{ steps.filter.outputs.app-one }}" >> $GITHUB_OUTPUT
+            echo "app-two=${{ steps.filter.outputs.app-two }}" >> $GITHUB_OUTPUT
+            echo "app-three=${{ steps.filter.outputs.app-three }}" >> $GITHUB_OUTPUT
+            echo "docker-log-agent=${{ steps.filter.outputs.docker-log-agent }}" >> $GITHUB_OUTPUT
+          fi
 
   app-one:
     name: 'Build App One'
@@ -72,7 +112,7 @@ jobs:
       app_name: app-two
       app_display_name: "Application Number Two"
       go_version: '1.25.1'
-      working_directory: project/event-driven/app-two
+      working_directory: projects/event-driven/app-two
     secrets: inherit
 
   app-three:
@@ -85,4 +125,16 @@ jobs:
       app_display_name: "Application Number Three"
       go_version: '1.25.1'
       working_directory: projects/event-driven/app-three
+    secrets: inherit
+
+  docker-log-agent:
+    name: 'Build Docker Log Agent'
+    needs: detect-changes
+    if: needs.detect-changes.outputs.docker-log-agent == 'true'
+    uses: ./.github/workflows/go-app.yml
+    with:
+      app_name: docker-log-agent
+      app_display_name: 'Docker Log Agent'
+      go_version: '1.25.1'
+      working_directory: projects/docker-log-agent
     secrets: inherit
