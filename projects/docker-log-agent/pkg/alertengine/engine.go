@@ -1,13 +1,13 @@
 package alertengine
 
 import (
-	"awesomeProject/internal/api"
-	"awesomeProject/internal/docker"
-	"awesomeProject/internal/interfaces"
-	"awesomeProject/internal/processor"
-	"awesomeProject/internal/types"
-	"awesomeProject/internal/webhook"
 	"context"
+	"github.com/SwanHtetAungPhyo/docker-log-agent/internal/api"
+	"github.com/SwanHtetAungPhyo/docker-log-agent/internal/docker"
+	"github.com/SwanHtetAungPhyo/docker-log-agent/internal/interfaces"
+	"github.com/SwanHtetAungPhyo/docker-log-agent/internal/processor"
+	"github.com/SwanHtetAungPhyo/docker-log-agent/internal/types"
+	"github.com/SwanHtetAungPhyo/docker-log-agent/internal/webhook"
 	"log"
 	"strings"
 	"sync"

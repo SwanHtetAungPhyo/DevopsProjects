@@ -1,9 +1,9 @@
 package main
 
 import (
-	"awesomeProject/internal/config"
-	"awesomeProject/pkg/alertengine"
 	"context"
+	"github.com/SwanHtetAungPhyo/docker-log-agent/internal/config"
+	"github.com/SwanHtetAungPhyo/docker-log-agent/pkg/alertengine"
 	"log"
 	"os"
 	"os/signal"

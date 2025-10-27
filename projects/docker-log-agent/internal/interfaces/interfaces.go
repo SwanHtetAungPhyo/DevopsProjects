@@ -1,8 +1,8 @@
 package interfaces
 
 import (
-	"awesomeProject/internal/types"
 	"context"
+	"github.com/SwanHtetAungPhyo/docker-log-agent/internal/types"
 	"time"
 )
 

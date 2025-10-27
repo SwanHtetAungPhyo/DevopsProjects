@@ -1,15 +1,16 @@
 package docker
 
 import (
-	"awesomeProject/internal/interfaces"
-	"awesomeProject/internal/types"
 	"context"
 	"fmt"
 	"strings"
 	"time"
 
+	"github.com/SwanHtetAungPhyo/docker-log-agent/internal/interfaces"
+	"github.com/SwanHtetAungPhyo/docker-log-agent/internal/types"
+	dockertypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/events"
+	//"github.com/docker/docker/api/types/events"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 )
@@ -17,7 +18,7 @@ import (
 type Client struct {
 	client        *client.Client
 	config        *interfaces.DockerConfig
-	eventChan     chan types.ContainerEvent
+	eventChan     chan types.ContainerEvent // Your custom type
 	reconnectChan chan struct{}
 }
 
@@ -45,6 +46,7 @@ func NewClient(config *interfaces.DockerConfig) (*Client, error) {
 }
 
 func (c *Client) ListContainers(ctx context.Context) ([]types.ContainerInfo, error) {
+	// Use container.ListOptions for latest SDK
 	containers, err := c.client.ContainerList(ctx, container.ListOptions{
 		All: true,
 	})
@@ -71,6 +73,7 @@ func (c *Client) ListContainers(ctx context.Context) ([]types.ContainerInfo, err
 }
 
 func (c *Client) GetContainerLogs(ctx context.Context, containerID string) (*types.LogStream, error) {
+	// Use container.LogsOptions for latest SDK
 	options := container.LogsOptions{
 		ShowStdout: true,
 		ShowStderr: true,
@@ -119,7 +122,8 @@ func (c *Client) watchEventsOnce(ctx context.Context) error {
 	filterArgs := filters.NewArgs()
 	filterArgs.Add("type", "container")
 
-	eventOptions := events.ListOptions{
+	// Use events.ListOptions for latest SDK
+	eventOptions := dockertypes.EventsOptions{
 		Filters: filterArgs,
 	}
 

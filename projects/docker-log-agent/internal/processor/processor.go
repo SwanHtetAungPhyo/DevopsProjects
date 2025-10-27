@@ -1,9 +1,9 @@
 package processor
 
 import (
-	"awesomeProject/internal/types"
 	"bufio"
 	"context"
+	"github.com/SwanHtetAungPhyo/docker-log-agent/internal/types"
 	"io"
 	"regexp"
 	"strings"

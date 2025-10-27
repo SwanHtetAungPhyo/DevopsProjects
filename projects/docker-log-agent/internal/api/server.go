@@ -1,13 +1,13 @@
 package api
 
 import (
-	"awesomeProject/internal/interfaces"
-	"awesomeProject/internal/types"
 	"bufio"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/SwanHtetAungPhyo/docker-log-agent/internal/interfaces"
+	"github.com/SwanHtetAungPhyo/docker-log-agent/internal/types"
 	"log"
 	"net/http"
 	"strconv"

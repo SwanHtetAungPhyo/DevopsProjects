@@ -1,11 +1,11 @@
 package webhook
 
 import (
-	"awesomeProject/internal/types"
 	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/SwanHtetAungPhyo/docker-log-agent/internal/types"
 	"io"
 	"log"
 	"net/http"

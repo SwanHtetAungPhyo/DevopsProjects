@@ -1,9 +1,9 @@
 package main
 
 import (
-	monitor2 "awesomeProject/monitor"
 	"context"
 	"errors"
+	monitor2 "github.com/SwanHtetAungPhyo/docker-log-agent/monitor"
 	"log"
 	"strings"
 

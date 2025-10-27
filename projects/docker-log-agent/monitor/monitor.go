@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/events"
 	"github.com/docker/docker/api/types/filters"
@@ -270,7 +271,7 @@ func (lm *LogMonitor) monitorDockerEvents(ctx context.Context) {
 	log.Println("🔍 Starting Docker events monitoring...")
 	filterArgs := filters.NewArgs()
 	filterArgs.Add("type", "container")
-	eventOptions := events.ListOptions{Filters: filterArgs}
+	eventOptions := types.EventsOptions{Filters: filterArgs}
 	eventChan, errChan := lm.client.Events(ctx, eventOptions)
 	for {
 		select {
