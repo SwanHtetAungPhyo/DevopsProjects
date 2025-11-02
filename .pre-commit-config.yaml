@@ -199,3 +199,14 @@ repos:
         language: system
         files: ^projects/docker-log-agent/.*\.go$
         pass_filenames: false
+
+  - repo: local
+    hooks:
+      - id: ai-commit-message
+        name: AI Commit Message Generator
+        entry: bash -c 'if [ -n "$PRE_COMMIT_AI_ENABLED" ]; then python scripts/ai_commit.py; fi'
+        language: system
+        pass_filenames: false
+        always_run: false
+        stages: [ commit-msg ]
+        verbose: true

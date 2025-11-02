@@ -18,11 +18,13 @@ services:
       timeout: 10s
       retries: 3
 
+
   app-one:
     build:
       context: ../event-driven/app-one
       dockerfile: Dockerfile
     environment:
+      - APP=JLL
       - APP_ENV=production
       - LOG_LEVEL=info
     expose:
