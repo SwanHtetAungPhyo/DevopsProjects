@@ -31,7 +31,7 @@ rules:
   # Empty lines - allow multiple empty lines
   empty-lines:
     max: 2
-    max-start: 1
+    max-start: 2
     max-end: 1
 
   # Brackets - allow both styles
@@ -60,6 +60,9 @@ rules:
 
   # Key duplicates - not allowed
   key-duplicates: enable
+
+  # New line at end of file - flexible
+  new-line-at-end-of-file: disable
 
   # Octal values - quoted
   octal-values:

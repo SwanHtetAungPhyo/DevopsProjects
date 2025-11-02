@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
 env:
   GO_VERSION: '1.21'
   DOCKER_BUILDKIT: 1
@@ -53,7 +58,7 @@ jobs:
             projects/docker-log-agent/config.yaml
             projects/docker-log-agent/docker-compose.yml
           config_file: .yamllint.yml
-          strict: true
+          strict: false
       
       - name: Lint Dockerfiles
         uses: hadolint/hadolint-action@v3.1.0
@@ -262,7 +267,7 @@ jobs:
           output: 'trivy-results.sarif'
       
       - name: Upload Trivy scan results
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'

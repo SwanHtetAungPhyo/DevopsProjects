@@ -26,7 +26,7 @@ alerts:
       config:
         url: "https://kapstra.hooks.com"
         timeout: "10s"
-  
+
   rate_limit:
     per_container: 10
     window: "5m"
