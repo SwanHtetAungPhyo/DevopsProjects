@@ -99,6 +99,13 @@ jobs:
       - name: Download dependencies
         run: go mod download
       
+      - name: Run go vet
+        run: |
+          go vet ./cmd/...
+          go vet ./internal/...
+          go vet ./pkg/...
+          go vet ./monitor/...
+      
       - name: Run tests
         run: go test -v -race -coverprofile=coverage.out ./...
       
@@ -108,15 +115,15 @@ jobs:
           version: latest
       
       - name: Build application
-        run: go build -v ./...
+        run: go build -v -o docker-log-agent ./cmd/
       
       - name: Build Docker image
         run: docker build -t docker-log-agent:test .
       
       - name: Test Docker image
         run: |
-          docker run --rm docker-log-agent:test --version || true
           docker run --rm docker-log-agent:test --help || true
+          docker run --rm docker-log-agent:test -h || true
       
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
