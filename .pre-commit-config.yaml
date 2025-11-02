@@ -199,7 +199,7 @@ repos:
         language: system
         files: ^projects/docker-log-agent/.*\.go$
         pass_filenames: false
-
+#fagskldfjkaldsjfklfjadsklfjaklsdjfklasdjfkljasdkljfasdkljfewoqiriqwejirewoia;
   - repo: local
     hooks:
       - id: ai-commit-message
