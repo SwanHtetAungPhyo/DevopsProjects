@@ -208,6 +208,6 @@ repos:
         entry: python3 scripts/ai_commit.py
         language: system
         pass_filenames: false
-        always_run: false
+        always_run: true
         stages: [ commit-msg ]
         verbose: true
