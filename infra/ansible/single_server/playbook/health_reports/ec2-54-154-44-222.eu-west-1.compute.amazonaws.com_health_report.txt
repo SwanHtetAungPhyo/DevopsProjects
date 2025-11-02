@@ -1,0 +1,28 @@
+========================================
+Health Check Report
+========================================
+Generated: 2025-11-01T23:47:46Z
+Server: ec2-54-154-44-222.eu-west-1.compute.amazonaws.com
+
+--------------------------------------------------
+Service: local core api health check
+URL: https://localhost:8443/api/v1/health
+Status: FAILED
+Result: UNHEALTHY ✗
+Error: Status code was -1 and not [200, 201, 204]: Request failed: <urlopen error [Errno 111] Connection refused>
+
+--------------------------------------------------
+Service: Via the caddy domain
+URL: https://api.dev.wearepyou.com/api/v1/health
+Status Code: 200
+Result: HEALTHY ✓
+Response Time: 0s
+
+--------------------------------------------------
+Service: Checking the ip
+URL: https://checkip.amazonaws.com/
+Status Code: 200
+Result: HEALTHY ✓
+Response Time: 0s
+
+========================================

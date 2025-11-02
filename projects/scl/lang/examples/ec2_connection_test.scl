@@ -2,7 +2,8 @@
 // This script tests different connection methods for your EC2 instance
 
 // Configuration - UPDATE THESE WITH YOUR ACTUAL IPs
-mode := "interpret";
+mode := interpret;
+target := ["testuser@localhost:2222"];
 setting := "configuration";
 super_user := true;
 on_error := "rollback";

@@ -1,0 +1,182 @@
+---
+- name: Create the APP dir on the ec2 server
+  hosts: webservers
+  become: yes
+  vars:
+    http_services:
+      - name: "local core api health check"
+        url: "https://localhost:8443/api/v1/health"
+      - name: "Via the caddy domain"
+        url: "https://api.dev.wearepyou.com/api/v1/health"
+      - name: "Checking the ip"
+        url: "https://checkip.amazonaws.com/"
+
+    app_path: "/opt/pembroke-admin"
+    app_owner: "ubuntu"
+    app_mode: '0755'
+    env_mode: '0640'
+    docker_compose_src: "../files/docker-compose.prod.yaml"
+    docker_compose_dest: "/opt/pembroke-admin"
+
+  tasks:
+    - name: Create the App folder
+      file:
+        path: "{{ app_path }}"
+        state: directory
+        mode: "{{ app_mode }}"
+        owner: "{{ app_owner }}"
+        group: "{{ app_owner }}"
+
+    - name: Copy the env for the next js application
+      copy:
+        src: ../.env
+        dest: "{{ app_path }}/.env"
+        owner: "{{ app_owner }}"
+        group: "{{ app_owner }}"
+        mode: "{{ env_mode }}"
+        backup: yes
+
+    - name: Copying the docker files
+      copy:
+        src: "{{ docker_compose_src }}"
+        dest: "{{ app_path }}/docker-compose.prod.yaml"
+        owner: "{{ app_owner }}"
+        group: "{{ app_owner }}"
+        mode: '0644'
+
+    - name: Running the checklist
+      shell: |
+        echo "Checking the file existence..."
+        echo "================================"
+        uname -a
+        echo ""
+        echo "Files in {{ app_path }}:"
+        ls -lah {{ app_path }}
+        echo ""
+        echo "Environment file content:"
+        cat {{ app_path }}/.env
+      args:
+        executable: /bin/bash
+      register: checklist_output
+      changed_when: false
+
+    - name: Print checklist output
+      debug:
+        msg: "{{ checklist_output.stdout_lines }}"
+
+    - name: Running the caddy and system checks
+      shell: |
+        echo "=== Caddyfile Configuration ==="
+        cat /etc/caddy/Caddyfile
+        echo ""
+        echo "=== Journal Disk Usage ==="
+        journalctl --disk-usage
+        echo ""
+        echo "=== Recent Caddy Logs (last 50) ==="
+        journalctl -u caddy -n 50 --no-pager
+        echo ""
+        echo "=== Docker Containers ==="
+        docker ps -a
+      args:
+        executable: /bin/bash
+      register: system_check_output
+      changed_when: false
+
+    - name: Print system check output
+      debug:
+        msg: "{{ system_check_output.stdout_lines }}"
+
+    - name: Testing the Core API endpoints
+      uri:
+        url: "{{ item.url }}"
+        method: GET
+        validate_certs: no
+        timeout: 10
+        status_code:
+          - 200
+          - 201
+          - 204
+      loop: "{{ http_services }}"
+      register: health_checks
+      ignore_errors: yes
+
+    - name: Display immediate service status
+      debug:
+        msg: |
+          Service: {{ item.item.name }}
+          URL: {{ item.item.url }}
+          Status: {{ 'UP ✓ (HTTP ' + (item.status|string) + ')' if (item.status is defined and item.status in [200, 201, 204]) else 'DOWN ✗' }}
+          {% if item.failed is defined and item.failed %}
+          Error: {{ item.msg | default('Connection failed') }}
+          {% endif %}
+      loop: "{{ health_checks.results }}"
+
+    - name: Create health report
+      copy:
+        content: |
+          ========================================
+          Health Check Report
+          ========================================
+          Generated: {{ ansible_date_time.iso8601 }}
+          Server: {{ inventory_hostname }}
+          
+          {% for item in health_checks.results %}
+          --------------------------------------------------
+          Service: {{ item.item.name }}
+          URL: {{ item.item.url }}
+          {% if item.failed is defined and item.failed %}
+          Status: FAILED
+          Result: UNHEALTHY ✗
+          Error: {{ item.msg | default('Connection error') }}
+          {% elif item.status is defined %}
+          Status Code: {{ item.status }}
+          Result: {{ 'HEALTHY ✓' if item.status in [200, 201, 204] else 'UNHEALTHY ✗' }}
+          Response Time: {{ item.elapsed | default('N/A') }}s
+          {% else %}
+          Status: SKIPPED
+          Result: UNKNOWN ⚠
+          Reason: {{ item.msg | default('Check was skipped') }}
+          {% endif %}
+          
+          {% endfor %}
+          ========================================
+        dest: /tmp/health_report.txt
+        owner: "{{ app_owner }}"
+        group: "{{ app_owner }}"
+        mode: '0644'
+
+    - name: Display health report location
+      debug:
+        msg: |
+          ========================================
+          Health report saved successfully!
+          Location: /tmp/health_report.txt
+          
+          To view the report, run:
+          ssh {{ inventory_hostname }} 'cat /tmp/health_report.txt'
+          ========================================
+
+    - name: Fetch health report to local machine
+      fetch:
+        src: /tmp/health_report.txt
+        dest: ./health_reports/{{ inventory_hostname }}_health_report.txt
+        flat: yes
+
+    - name: Summary of health checks
+      debug:
+        msg: |
+          ========================================
+          HEALTH CHECK SUMMARY
+          ========================================
+          Total Services Checked: {{ health_checks.results | length }}
+          {% set healthy_count = health_checks.results | selectattr('status', 'defined') | selectattr('status', 'in', [200, 201, 204]) | list | length %}
+          {% set unhealthy_count = health_checks.results | selectattr('status', 'defined') | rejectattr('status', 'in', [200, 201, 204]) | list | length %}
+          {% set skipped_count = health_checks.results | rejectattr('status', 'defined') | list | length %}
+          Healthy: {{ healthy_count }}
+          Unhealthy: {{ unhealthy_count }}
+          Skipped: {{ skipped_count }}
+          
+          Report saved to:
+          - Remote: /tmp/health_report.txt
+          - Local: ./health_reports/{{ inventory_hostname }}_health_report.txt
+          ========================================

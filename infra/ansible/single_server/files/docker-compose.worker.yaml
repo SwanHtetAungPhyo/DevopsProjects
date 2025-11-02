@@ -1,0 +1,71 @@
+
+services:
+  processor-worker:
+    image: 595069099192.dkr.ecr.eu-west-1.amazonaws.com/pembroke/worker:latest
+    container_name: pembroke-processor-worker
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    env_file:
+      - .env
+    volumes:
+      - ./templates:/app/templates:ro
+    networks:
+      - pembroke-network
+    depends_on:
+      nats:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  nats:
+    image: nats:2.10-alpine
+    container_name: pembroke-nats
+    restart: unless-stopped
+    ports:
+      - "4222:4222"  # NATS client port
+      - "8222:8222"  # HTTP monitoring port
+      - "6222:6222"  # Cluster port (for clustering if needed)
+    command: [
+      "--jetstream",
+      "--store_dir=/data",
+      "--http_port", "8222",
+      "--max_payload", "8MB",
+      "--max_pending", "256MB"
+    ]
+    volumes:
+      - nats_data:/data
+    networks:
+      - pembroke-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8222/varz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "3"
+
+networks:
+  pembroke-network:
+    driver: bridge
+    name: pembroke-network
+
+volumes:
+  nats_data:
+    name: pembroke-nats-data
+  processor_logs:
+    name: pembroke-processor-logsa

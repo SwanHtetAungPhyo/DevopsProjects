@@ -13,7 +13,7 @@ repos:
 
       - id: go-mod-tidy
         name: Go Mod Tidy (Pulumi Event)
-        entry: bash -c 'cd infra/pulumi/event && go mod tidy -v && git add go.mod go.sum'
+        entry: bash -c 'cd infra/pulumi/event && go mod tidy -v && git add create-folder.yaml go.sum'
         language: system
         files: ^infra/pulumi/event/go\.mod$
         pass_filenames: false
@@ -30,7 +30,7 @@ repos:
 
       - id: go-mod-tidy
         name: Go Mod Tidy (SCL Lang)
-        entry: bash -c 'cd projects/scl/lang && go mod tidy -v && git add go.mod go.sum'
+        entry: bash -c 'cd projects/scl/lang && go mod tidy -v && git add create-folder.yaml go.sum'
         language: system
         files: ^projects/scl/lang/go\.mod$
         pass_filenames: false
@@ -47,7 +47,7 @@ repos:
 
       - id: go-mod-tidy
         name: Go Mod Tidy (App One)
-        entry: bash -c 'cd projects/event-driven/app-one && go mod tidy -v && git add go.mod go.sum'
+        entry: bash -c 'cd projects/event-driven/app-one && go mod tidy -v && git add create-folder.yaml go.sum'
         language: system
         files: ^projects/event-driven/app-one/go\.mod$
         pass_filenames: false
@@ -64,7 +64,7 @@ repos:
 
       - id: go-mod-tidy
         name: Go Mod Tidy (App Two)
-        entry: bash -c 'cd projects/event-driven/app-two && go mod tidy -v && git add go.mod go.sum'
+        entry: bash -c 'cd projects/event-driven/app-two && go mod tidy -v && git add create-folder.yaml go.sum'
         language: system
         files: ^projects/event-driven/app-two/go\.mod$
         pass_filenames: false
@@ -81,7 +81,7 @@ repos:
 
       - id: go-mod-tidy
         name: Go Mod Tidy (App Three)
-        entry: bash -c 'cd projects/event-driven/app-three && go mod tidy -v && git add go.mod go.sum'
+        entry: bash -c 'cd projects/event-driven/app-three && go mod tidy -v && git add create-folder.yaml go.sum'
         language: system
         files: ^projects/event-driven/app-three/go\.mod$
         pass_filenames: false
@@ -98,7 +98,7 @@ repos:
 
       - id: go-mod-tidy
         name: Go Mod Tidy (Docker Log Agent)
-        entry: bash -c 'cd projects/docker-log-agent && go mod tidy -v && git add go.mod go.sum'
+        entry: bash -c 'cd projects/docker-log-agent && go mod tidy -v && git add create-folder.yaml go.sum'
         language: system
         files: ^projects/docker-log-agent/go\.mod$
         pass_filenames: false

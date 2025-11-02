@@ -2,53 +2,31 @@
 
 set -e  # Exit on error
 
-# import primary
+MODE=compile
 SETTING=configuration
-TARGET=testuser@localhost:2222
 SUPER_USER=true
 ON_ERROR=rollback
-MODE=compile
-# Check if docker and python3 exist on testuser@localhost:2222
-ssh testuser@localhost:2222 "command -v docker && command -v python3" > /dev/null 2>&1
-SYSTEM_READY=$?
-
-test_file_operations() {
-    if [ $SYSTEM_READY -eq 0 ]; then
-        echo "System is ready for file operations"
-        # Test access
-        echo "System tools missing"
-    else
-    fi
-}
-
-copy_config_files() {
-    echo "Copying configuration files..."
-    ssh testuser@localhost:2222 "mkdir -p /tmp/myapp"
-    scp -r test-files/app.conf testuser@localhost:2222:/tmp/myapp/app.conf
-    ssh testuser@localhost:2222 "mkdir -p /tmp/nginx"
-    scp -r test-files/nginx.conf testuser@localhost:2222:/tmp/nginx/nginx.conf
-    echo "Configuration files copied successfully"
-}
-
-create_script_files() {
-    echo "Creating script files..."
-    ssh testuser@localhost:2222 "mkdir -p /tmp/scripts && touch /tmp/scripts/deploy.sh && chmod 755 /tmp/scripts/deploy.sh"
-    ssh testuser@localhost:2222 "mkdir -p /tmp/logs && touch /tmp/logs/app.log && chmod 644 /tmp/logs/app.log"
-    ssh testuser@localhost:2222 "mkdir -p /tmp/config && touch /tmp/config/settings.ini && chmod 600 /tmp/config/settings.ini"
-    echo "Script files created successfully"
-}
-
-verify_deployment() {
-    echo "Verifying deployment..."
-    echo "All files deployed and created successfully"
-}
+TARGET=ec2-user@YOUR_PUBLIC_IP_HERE
 
 main() {
-    test_file_operations
-    copy_config_files
-    create_script_files
-    verify_deployment
-    echo "File operations test completed!"
+    echo "🔍 EC2 Connection Diagnostics"
+    echo "============================="
+    echo "Target: "+target"
+    echo ""
+    echo "⚠️  IMPORTANT: Update the target IP in this script!"
+    echo "   1. Go to AWS Console → EC2 → Instances"
+    echo "   2. Find your instance"
+    echo "   3. Copy the PUBLIC IPv4 address or Public DNS"
+    echo "   4. Update the 'target' variable above"
+    echo ""
+    connection_test
+    echo "✅ Connection test completed"
+}
+
+connection_test() {
+    echo "🧪 Testing basic connection..."
+    sysinfo
+    echo "✅ If you see system info above, the connection works!"
 }
 
 # Execute main function

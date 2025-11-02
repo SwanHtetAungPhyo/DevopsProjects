@@ -1,0 +1,51 @@
+---
+- name: Preparation for the worker instance
+  hosts: webservers
+  become: yes
+  vars:
+    worker_path: /opt/data-processor
+    worker_docker_destination: /opt/data-processor/docker-compose.yaml
+    worker_mode: '0755'
+
+  tasks:
+    - name: Folder Creation for the worker
+      file:
+        path: "{{ worker_path }}"
+        mode: "{{ worker_mode }}"
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Copying the files to the destination (dot env file)
+      copy:
+        src: ../files/.env.worker
+        dest: "{{ worker_path }}/.env"
+        mode: "0655"
+        owner: ubuntu
+        group: ubuntu
+        backup: yes
+
+    - name: Copying the files to the destination (docker compose file)
+      copy:
+        src: ../files/docker-compose.worker.yaml
+        dest: "{{ worker_docker_destination }}"
+        mode: "0655"
+        owner: ubuntu
+        group: ubuntu
+        backup: no
+    - name: Running the file checking on the destination
+      shell: |
+        echo "Checking the file existence ... " 
+        cd  "{{ worker_path }}"
+        ls -alh .
+        cat .env
+        cat docker-compose.yaml
+        sudo docker ps
+      args:
+        executable: /bin/bash
+      register: check_file_output
+      changed_when: false
+
+    - name: Printing the shell
+      debug:
+        msg: "{{ check_file_output.stdout_lines }}"
