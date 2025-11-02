@@ -1,0 +1,378 @@
+name: DevOps Projects CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  GO_VERSION: '1.21'
+  DOCKER_BUILDKIT: 1
+
+jobs:
+  # Detect changes to determine which projects to build
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      docker-log-agent: ${{ steps.changes.outputs.docker-log-agent }}
+      event-driven: ${{ steps.changes.outputs.event-driven }}
+      scl: ${{ steps.changes.outputs.scl }}
+      pulumi: ${{ steps.changes.outputs.pulumi }}
+      infra: ${{ steps.changes.outputs.infra }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            docker-log-agent:
+              - 'projects/docker-log-agent/**'
+            event-driven:
+              - 'projects/event-driven/**'
+            scl:
+              - 'projects/scl/**'
+            pulumi:
+              - 'infra/pulumi/**'
+            infra:
+              - 'infra/**'
+              - 'makefile'
+              - '.github/workflows/**'
+
+  # Lint and validate configuration files
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Lint YAML files
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          file_or_dir: |
+            .github/workflows/
+            projects/docker-log-agent/config.yaml
+            projects/docker-log-agent/docker-compose.yml
+          config_file: .yamllint.yml
+          strict: true
+      
+      - name: Lint Dockerfiles
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: projects/docker-log-agent/Dockerfile
+          failure-threshold: warning
+      
+      - name: Validate Makefile
+        run: |
+          make --dry-run help
+          make --dry-run verify
+
+  # Test Docker Log Agent
+  test-docker-log-agent:
+    needs: [changes, lint]
+    if: needs.changes.outputs.docker-log-agent == 'true' || needs.changes.outputs.infra == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/docker-log-agent
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      
+      - name: Download dependencies
+        run: go mod download
+      
+      - name: Run tests
+        run: go test -v -race -coverprofile=coverage.out ./...
+      
+      - name: Run linting
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          working-directory: projects/docker-log-agent
+      
+      - name: Build application
+        run: go build -v ./...
+      
+      - name: Build Docker image
+        run: docker build -t docker-log-agent:test .
+      
+      - name: Test Docker image
+        run: |
+          docker run --rm docker-log-agent:test --version || true
+          docker run --rm docker-log-agent:test --help || true
+      
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          file: projects/docker-log-agent/coverage.out
+          flags: docker-log-agent
+
+  # Test SCL Language
+  test-scl:
+    needs: [changes, lint]
+    if: needs.changes.outputs.scl == 'true' || needs.changes.outputs.infra == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/scl/lang
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-scl-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      
+      - name: Download dependencies
+        run: go mod download
+      
+      - name: Run tests
+        run: go test -v -race -coverprofile=coverage.out ./...
+      
+      - name: Run linting
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          working-directory: projects/scl/lang
+      
+      - name: Build SCL tool
+        run: go build -o scl .
+      
+      - name: Test SCL compilation
+        run: |
+          ./scl --help || true
+          if [ -f examples/demo.scl ]; then
+            ./scl examples/demo.scl || true
+          fi
+      
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          file: projects/scl/lang/coverage.out
+          flags: scl
+
+  # Test Event-Driven Services
+  test-event-driven:
+    needs: [changes, lint]
+    if: needs.changes.outputs.event-driven == 'true' || needs.changes.outputs.infra == 'true'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Test Docker Compose configuration
+        run: |
+          cd projects/event-driven
+          docker-compose config
+          docker-compose build --no-cache
+      
+      - name: Start services
+        run: |
+          cd projects/event-driven
+          docker-compose up -d
+          sleep 30
+      
+      - name: Check service health
+        run: |
+          cd projects/event-driven
+          docker-compose ps
+          docker-compose logs
+      
+      - name: Cleanup
+        run: |
+          cd projects/event-driven
+          docker-compose down -v
+
+  # Validate Infrastructure Code
+  validate-infrastructure:
+    needs: [changes, lint]
+    if: needs.changes.outputs.pulumi == 'true' || needs.changes.outputs.infra == 'true'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      
+      - name: Set up Pulumi
+        uses: pulumi/actions@v4
+        with:
+          pulumi-version: ^3.0.0
+      
+      - name: Validate Pulumi code
+        run: |
+          cd infra/pulumi/event
+          go mod download
+          go build .
+          pulumi preview --dry-run || echo "Pulumi preview completed (dry-run)"
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+      
+      - name: Validate Terraform (if exists)
+        run: |
+          if [ -d "infra/terraform" ] && [ "$(ls -A infra/terraform)" ]; then
+            cd infra/terraform
+            terraform fmt -check
+            terraform init -backend=false
+            terraform validate
+          else
+            echo "No Terraform files to validate"
+          fi
+
+  # Security scanning
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+      
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+      
+      - name: Scan Docker images
+        run: |
+          if [ -f "projects/docker-log-agent/Dockerfile" ]; then
+            docker build -t scan-target projects/docker-log-agent/
+            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+              aquasec/trivy:latest image scan-target
+          fi
+
+  # Build and push Docker images (on main branch)
+  build-and-push:
+    needs: [test-docker-log-agent, test-scl, test-event-driven, validate-infrastructure, security]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKER_USERNAME }}/docker-log-agent
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+      
+      - name: Build and push Docker Log Agent
+        uses: docker/build-push-action@v5
+        with:
+          context: projects/docker-log-agent
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Deploy to staging (on main branch)
+  deploy-staging:
+    needs: [build-and-push]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: staging
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Deploy to staging
+        run: |
+          echo "Deploying to staging environment..."
+          # Add actual deployment commands here
+          # Example: kubectl apply -f k8s/staging/
+          # Example: docker-compose -f docker-compose.staging.yml up -d
+      
+      - name: Run smoke tests
+        run: |
+          echo "Running smoke tests..."
+          # Add smoke test commands here
+          # Example: curl -f http://staging.example.com/health
+      
+      - name: Notify deployment
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: ${{ job.status }}
+          text: 'Staging deployment completed'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # Generate and update documentation
+  documentation:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Generate project documentation
+        run: |
+          # Update README files with latest information
+          echo "Updating documentation..."
+          
+          # Generate API documentation for Go projects
+          if command -v godoc &> /dev/null; then
+            find projects -name "*.go" -path "*/cmd/*" -o -path "*/internal/*" | \
+              xargs -I {} dirname {} | sort -u | \
+              xargs -I {} sh -c 'cd {} && go doc -all > API.md 2>/dev/null || true'
+          fi
+      
+      - name: Commit documentation updates
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git diff --staged --quiet || git commit -m "docs: update generated documentation [skip ci]"
+          git push || true

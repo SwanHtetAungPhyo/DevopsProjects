@@ -205,9 +205,10 @@ repos:
     hooks:
       - id: ai-commit-message
         name: AI Commit Message Generator
-        entry: python3 scripts/ai_commit.py
+        entry: bash -c 'python3 scripts/commit-ai.py "$1"'
         language: system
         pass_filenames: false
         always_run: true
         stages: [ commit-msg ]
         verbose: true
+        args: [--commit-msg-file]

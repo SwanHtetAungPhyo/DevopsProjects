@@ -88,22 +88,46 @@ Return ONLY the commit message in conventional format, nothing else."""
         return None
 
 def main():
-    commit_msg_file = sys.argv[1] if len(sys.argv) > 1 else None
+    print("🚀 AI commit script started")
 
-    if not commit_msg_file:
-        print("No commit message file provided")
+    # Handle pre-commit argument format: --commit-msg-file <filename>
+    if len(sys.argv) > 2 and sys.argv[1] == "--commit-msg-file":
+        commit_msg_file = sys.argv[2]
+    elif len(sys.argv) > 1:
+        # Direct file path (for manual testing)
+        commit_msg_file = sys.argv[1]
+    else:
+        print("❌ No commit message file provided")
+        print(f"Arguments received: {sys.argv}")
         return 1
+
+    print(f"📁 Commit message file: {commit_msg_file}")
+
+    if not os.path.exists(commit_msg_file):
+        print(f"❌ File does not exist: {commit_msg_file}")
+        return 1
+
+    # Read existing commit message
     with open(commit_msg_file, 'r') as f:
         existing_content = f.read().strip()
-    if existing_content and not existing_content.startswith('#'):
-        print("Commit message already exists, skipping AI generation")
+
+    print(f"📄 Existing content: {repr(existing_content)}")
+
+    lines = existing_content.split('\n')
+    meaningful_lines = [line for line in lines if line.strip() and not line.strip().startswith('#')]
+
+    if meaningful_lines:
+        print("ℹ️ Commit message already exists, skipping AI generation")
         return 0
 
-    print("Analyzing changes with AI...")
+    print("🤖 Analyzing changes with AI...")
+
     diff = get_staged_diff()
     if not diff:
-        print("No staged changes found")
+        print("❌ No staged changes found")
         return 0
+
+    print(f"📊 Diff length: {len(diff)} characters")
 
     ai_message = generate_commit_message(diff)
 
@@ -111,10 +135,10 @@ def main():
         with open(commit_msg_file, 'w') as f:
             f.write(ai_message)
         print(f"✅ AI-generated commit message: {ai_message}")
+        return 0
     else:
         print("❌ Failed to generate AI commit message")
-
-    return 0
+        return 1
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -56,6 +56,15 @@ build/
 target/
 *.log
 
+# Project-specific build artifacts
+projects/docker-log-agent/docker-log-agent
+projects/scl/lang/scl
+infra/pulumi/event/event-driven
+main
+scl
+docker-log-agent
+event-driven
+
 # Terraform
 .terraform/
 *.tfstate

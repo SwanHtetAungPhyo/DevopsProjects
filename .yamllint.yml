@@ -1,0 +1,80 @@
+# YAML Lint Configuration for DevOps Projects
+
+extends: default
+
+rules:
+  # Line length - allow longer lines for readability
+  line-length:
+    max: 120
+    level: warning
+
+  # Indentation - use 2 spaces consistently
+  indentation:
+    spaces: 2
+    indent-sequences: true
+    check-multi-line-strings: false
+
+  # Comments - allow comments without space after #
+  comments:
+    min-spaces-from-content: 1
+    require-starting-space: false
+
+  # Document start - not required for all files
+  document-start:
+    present: false
+
+  # Truthy values - allow yes/no, on/off, etc.
+  truthy:
+    allowed-values: ['true', 'false', 'yes', 'no', 'on', 'off']
+    check-keys: false
+
+  # Empty lines - allow multiple empty lines
+  empty-lines:
+    max: 2
+    max-start: 1
+    max-end: 1
+
+  # Brackets - allow both styles
+  brackets:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+
+  # Braces - allow both styles  
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+
+  # Colons - flexible spacing
+  colons:
+    max-spaces-before: 0
+    max-spaces-after: 1
+
+  # Commas - standard spacing
+  commas:
+    max-spaces-before: 0
+    max-spaces-after: 1
+
+  # Hyphens - flexible for lists
+  hyphens:
+    max-spaces-after: 1
+
+  # Key duplicates - not allowed
+  key-duplicates: enable
+
+  # Octal values - quoted
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
+
+# Ignore certain files and patterns
+ignore: |
+  .git/
+  .github/
+  node_modules/
+  .venv/
+  __pycache__/
+  *.pyc
+  .DS_Store
+  .env*
+  !.env.example
+  !.env.template
